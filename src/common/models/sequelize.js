@@ -18,7 +18,7 @@ export default () => {
   }));
   defines.forEach(function (define) {
     const schema = require('../../modules/' + define);
-    const model = schema.sequelize(sequelize, Sequelize.DataTypes);
+    const model = schema(sequelize, Sequelize.DataTypes);
     models[model.name] = model;
   });
   Sequelize.models = models;

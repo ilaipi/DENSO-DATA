@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --exec babel-node src/app.js | bunyan -o short -L"
   },
   "repository": {
     "type": "git",
@@ -31,7 +32,9 @@
     "dotenv": "^4.0.0",
     "glob": "^7.1.2",
     "lodash": "^4.17.4",
+    "moment": "^2.19.1",
     "path": "^0.12.7",
+    "pg": "^7.3.0",
     "sequelize": "^4.13.17"
   },
   "devDependencies": {

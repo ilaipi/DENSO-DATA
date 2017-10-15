@@ -2,7 +2,7 @@
  * 上海期货交易所的"日交易快讯"中的产品
  */
 module.exports = function (sequelize, DataTypes) {
-  const Model = sequelize.define('Consumer', {
+  const Model = sequelize.define('SFEProduct', {
     name: {
       type: DataTypes.STRING,
       comment: '产品名称'
@@ -28,6 +28,8 @@ module.exports = function (sequelize, DataTypes) {
       ]
     }
   }, {
+    timestamps: false,
+    tableName: 'sfe_product',
     classMethods: {},
     instanceMethods: {}
   });
