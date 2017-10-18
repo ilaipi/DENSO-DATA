@@ -31,6 +31,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING,
       comment: '交割月'
     },
+    first: {
+      type: DataTypes.BOOLEAN,
+      comment: '第一行'
+    },
     preSettlementPrice: {
       type: DataTypes.DOUBLE,
       comment: '前结算'
