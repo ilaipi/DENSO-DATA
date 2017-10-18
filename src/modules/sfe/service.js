@@ -104,10 +104,25 @@ const gather = async (date) => {
   await Model.bulkCreate(rows);
 };
 
-export { gather };
+/**
+ * 查询指定时间范围内（前含后不含）
+ * 某个商品
+ * 所有的first=true记录
+ */
+const queryFirst = async ({ start, end, productId }) => {
+  const model = sequelize.models.SFEKX;
+  const where = { productId, first: true };
+  const { and, gte, lt } = sequelize.Op;
+  if (start && end) {
+    where[and] = [ { date: { [gte]: start } }, { date: { [lt]: end } } ];
+  }
+  return await model.findAll({ where });
+};
+
+export { gather, queryFirst };
 
 export default async () => {
   const date = getDate();
-  // const date = '20171013';
+  // const date = '20171018';
   await gather(date);
 };
