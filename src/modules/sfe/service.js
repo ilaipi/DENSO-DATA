@@ -54,13 +54,18 @@ const parseData = (data, date) => {
   });
 };
 
-export default async () => {
-  // const date = getDate();
-  const date = '20171013';
-  console.log('date', date);
+const gather = async (date) => {
+  logger.info({ date }, 'gather sfe data');
   const data = await fetchData(date);
   const rows = parseData(data.o_curinstrument, date);
-  console.log(rows);
   const Model = sequelize.models.SFEKX;
   await Model.bulkCreate(rows);
+};
+
+export { gather };
+
+export default async () => {
+  const date = getDate();
+  // const date = '20171013';
+  await gather(date);
 };
