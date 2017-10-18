@@ -5,3 +5,5 @@ build
 .env
 
 npm-debug.log
+
+*.xlsx
