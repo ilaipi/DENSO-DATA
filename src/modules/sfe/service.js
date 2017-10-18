@@ -97,6 +97,10 @@ const parseData = (data, date) => {
 const gather = async (date) => {
   logger.info({ date }, 'gather sfe data');
   const data = await fetchData(date);
+  if (!data || !data.o_curinstrument) {
+    logger.warn({ date }, 'no data today');
+    return;
+  }
   const rows = parseData(data.o_curinstrument, date);
   await savaMeta(rows);
   logger.info({ rows }, 'get sfe data');
