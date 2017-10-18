@@ -1,7 +1,7 @@
 import sequelize from 'sequelize';
 import axios from 'axios';
 import moment from 'moment';
-import { map, keys, trim } from 'lodash';
+import { map, unset, forEach, keys, trim } from 'lodash';
 
 import logger from './../util/log.js';
 
@@ -26,6 +26,26 @@ const fields = {
   VOLUME: 'volume',
   OPENINTEREST: 'openInterest',
   OPENINTERESTCHG: 'openInterestChg'
+};
+
+const savaMeta = async (rows) => {
+  const products = {};
+  // 过滤重复的商品
+  forEach(rows, ({ productId, name }) => {
+    products[productId] = { productId, name };
+  });
+  unset(products, '总计');
+  const model = sequelize.models.SFEProduct;
+  // 每个商品进行更新
+  for (let productId of keys(products)) {
+    const product = await model.findOne({ where: { productId } });
+    if (product) {
+      product.name = products[productId].name;
+      await product.save;
+    } else {
+      await model.create(products[productId]);
+    }
+  }
 };
 
 const fetchData = async (date) => {
@@ -58,6 +78,8 @@ const gather = async (date) => {
   logger.info({ date }, 'gather sfe data');
   const data = await fetchData(date);
   const rows = parseData(data.o_curinstrument, date);
+  await savaMeta(rows);
+  logger.info({ rows }, 'get sfe data');
   const Model = sequelize.models.SFEKX;
   await Model.bulkCreate(rows);
 };
