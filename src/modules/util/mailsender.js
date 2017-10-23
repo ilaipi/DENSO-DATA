@@ -1,9 +1,10 @@
 import nodemailer from 'nodemailer';
 
 import config from './config.js';
+import logger from './log.js';
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.163.com',
+  host: 'smtp.qq.com',
   port: '465',
   secure: true,
   auth: {
@@ -27,14 +28,8 @@ const mailOptions = {
  */
 const send = async ({ subject, text, html, attachments }) => {
   const options = { ...mailOptions, attachments, subject, text, html };
-  console.log('mailOptions', options);
-  transporter.sendMail(options, (err, info) => {
-    if (err) {
-      console.log('====err', err);
-    } else {
-      console.log('====sent', info);
-    }
-  });
+  logger.info({ subject, text, html }, 'send mail');
+  await transporter.sendMail(options);
 };
 
 export { send };
