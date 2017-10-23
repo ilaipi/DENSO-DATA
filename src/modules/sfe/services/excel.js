@@ -1,5 +1,3 @@
-import fs from 'fs';
-
 import sequelize from 'sequelize';
 import excel from 'node-excel-export';
 
@@ -9,7 +7,6 @@ export default async ({ start, end, productId }) => {
   const model = sequelize.models.SFEProduct;
   const product = await model.findOne({ where: { productId } });
   const rows = await sfe.queryFirst({ start, end, productId });
-  // const heading = ['日期', '交割月', '收盘价', '结算参考价'];
   const specification = {
     date: {
       displayName: '日期',
@@ -47,5 +44,5 @@ export default async ({ start, end, productId }) => {
       data: rows
     }
   ]);
-  await fs.writeFileSync('sfe_cu.xlsx', content);
+  return content;
 };
