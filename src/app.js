@@ -6,5 +6,5 @@ import models from './common/models/';
 
 models()
 .then(async () => {
-  await initial();
+  // await initial();
 });

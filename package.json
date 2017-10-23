@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --exec babel-node src/app.js | bunyan -o short -L",
+    "daily": "nodemon --exec babel-node src/daily.js | bunyan -o short -L",
     "start": "babel-node src/app.js | bunyan -o short -L"
   },
   "repository": {
