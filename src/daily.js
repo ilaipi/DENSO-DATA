@@ -57,4 +57,5 @@ models()
       content: znContent
     }]
   });
+  process.exit(0);
 });
