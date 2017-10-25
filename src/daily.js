@@ -26,8 +26,8 @@ models()
   const cuContent = await sfeExcel({
     start, end, productId: 'cu_f'
   });
-  const znContent = await sfeExcel({
-    start, end, productId: 'zn_f'
+  const alContent = await sfeExcel({
+    start, end, productId: 'al_f'
   });
   const filename = `${start.format('MMDD')}-${end.format('MMDD')}`;
   await mailSender.send({
@@ -38,8 +38,8 @@ models()
       filename: `铜-${filename}.xlsx`,
       content: cuContent
     }, {
-      filename: `锌-${filename}.xlsx`,
-      content: znContent
+      filename: `铝-${filename}.xlsx`,
+      content: alContent
     }]
   });
   process.exit(0);
