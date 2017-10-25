@@ -17,27 +17,12 @@ models()
   const day = today.date();
   await sfe.gather(today.format('YYYYMMDD'));
 
-  // 获取本月改变交割月的那天
-  const last = today.add(1, 'months').date(1).subtract(1, 'days').date();
-  const changeDay = last > 30 ? 17 : 16;
-
-  if (day !== 1 && day !== changeDay) return;
-  logger.info({ day, changeDay }, 'will send mail');
-  let start;
-  let end;
-  // 1号发上个月的数据
-  if (day === 1) {
-    start = moment().subtract(1, 'months').date(1); // 含
-    end = moment(); // 不含
-  }
-  // 变化的那天 发上个月变化的那天到这个月变化的前一天的数据
-  if (day === changeDay) {
-    const preLast = moment().date(1).subtract(1, 'days').date();
-    const preChangeDay = preLast > 30 ? 17 : 16;
-    start = moment().subtract(1, 'months').date(preChangeDay - 1);
-    end = moment().subtract(1, 'days');
-  }
-  logger.info({ start: start.format('YYYYMMDD'), end: end.format('YYYYMMDD') });
+  if (day !== 1 && day !== 16) return;
+  logger.info({ day }, 'will send mail');
+  // 1 或 16
+  let start = moment().subtract(1, 'months').date(day); // 含
+  let end = today; // 不含
+  logger.info({ start: start.format('YYYYMMDD'), end: end.format('YYYYMMDD') }, 'send mail date');
   const cuContent = await sfeExcel({
     start, end, productId: 'cu_f'
   });
