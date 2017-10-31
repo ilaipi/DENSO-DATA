@@ -17,7 +17,7 @@ models()
   const day = today.date();
   await sfe.gather(today.format('YYYYMMDD'));
 
-  if (day !== 1 && day !== 16) return;
+  if (day !== 1 && day !== 16) { process.exit(0); }
   logger.info({ day }, 'will send mail');
   // 1 或 16
   let start = moment().subtract(1, 'months').date(day); // 含
