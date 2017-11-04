@@ -1,66 +1,70 @@
 import sequelize from 'sequelize';
-import axios from 'axios';
 import moment from 'moment';
-import { map, keys, trim } from 'lodash';
+import axios from 'axios';
+import iconv from 'iconv';
+import cheerio from 'cheerio';
+import { map } from 'lodash';
 
 import logger from './../util/log.js';
 
-const getDate = () => {
-  return moment(new Date()).format('YYYYMMDD');
-};
+const baseUrl = 'http://www.ccmn.cn/historyprice/cjxh_1/';
 
-const baseUrl = 'http://www.shfe.com.cn/data/dailydata/kx/kx';
+const { Iconv } = iconv;
 
-const fields = {
-  PRODUCTID: 'productId',
-  PRODUCTNAME: 'name',
-  DELIVERYMONTH: 'deliveryMonth',
-  PRESETTLEMENTPRICE: 'preSettlementPrice',
-  OPENPRICE: 'openPrice',
-  HIGHESTPRICE: 'highestPrice',
-  LOWESTPRICE: 'lowestPrice',
-  CLOSEPRICE: 'closePrice',
-  SETTLEMENTPRICE: 'settlementPrice',
-  ZD1_CHG: 'zd1',
-  ZD2_CHG: 'zd2',
-  VOLUME: 'volume',
-  OPENINTEREST: 'openInterest',
-  OPENINTERESTCHG: 'openInterestChg'
-};
-
-const fetchData = async (date) => {
-  const url = `${baseUrl}${date}.dat`;
+const fetchData = async () => {
   let response;
   try {
-    response = await axios.get(url);
+    const encoder = new Iconv('GBK', 'UTF-8');
+    response = await axios.get(baseUrl, {
+      responseType: 'arraybuffer'
+    });
+    response = encoder.convert(response.data).toString();
+    response = response.replace(/\r?\n|\r|\t|\s{2,}/g, '');
+    const $ = cheerio.load(response);
+    response = $('div#list_elem table tbody tr');
   } catch (err) {
-    logger.warn(err, '采集异常');
+    logger.warn(err, '采集长江有色金属网异常');
     return;
   }
-  if (response.status !== 200) {
-    return;
-  }
-  return response.data;
+  return response;
 };
 
-const parseData = (data, date) => {
-  const rowFields = keys(fields);
-  return map(data, row => {
-    const delivery = { date };
-    for (let field of rowFields) {
-      delivery[fields[field]] = trim(row[field]) || null;
-    }
-    return delivery;
+const fields = ['name', 'priceRange', 'avgPrice', 'zd', 'unit', 'date'];
+
+const parseData = (data) => {
+  const year = moment().get('year');
+  const rows = data.map((idx, element) => {
+    const $ = cheerio.load(element);
+    const product = {};
+    $('td').each((i, ele) => {
+      product[fields[i]] = cheerio.load(ele).text();
+    });
+    product.date = moment(new Date(`${year}-${product.date}`)).toDate();
+    product.avgPrice = Number(product.avgPrice);
+    product.zd = Number(product.zd);
+    console.log(product);
+    return product;
   });
+  rows.splice(0, 1);
+  return rows;
+};
+
+const gather = async () => {
+  logger.info('start ccmn');
+  const data = await fetchData();
+  logger.info('ccmn fetched');
+  const products = parseData(data);
+  const date = products[0].date;
+  const Model = sequelize.models.CCMN;
+  await Model.destroy({ where: { date } });
+  await Model.bulkCreate(map(products, (product) => { return { ...product }; }));
 };
 
 export default async () => {
-  const date = getDate();
-  // const date = '20171013';
-  console.log('date', date);
-  const data = await fetchData(date);
-  const rows = parseData(data.o_curinstrument, date);
-  console.log(rows);
-  const Model = sequelize.models.SFEKX;
-  await Model.bulkCreate(rows);
+  logger.info('start ccmn');
+  const data = await fetchData();
+  logger.info('ccmn fetched');
+  parseData(data);
 };
+
+export { gather };

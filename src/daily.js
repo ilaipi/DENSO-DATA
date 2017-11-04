@@ -7,7 +7,9 @@ import moment from 'moment';
 import models from './common/models/';
 
 import * as sfe from './modules/sfe/service.js';
+import * as ccmn from './modules/ccmn/service.js';
 import sfeExcel from './modules/sfe/services/excel.js';
+import ccmnExcel from './modules/ccmn/services/excel.js';
 import * as mailSender from './modules/util/mailsender.js';
 import logger from './modules/util/log.js';
 
@@ -16,6 +18,7 @@ models()
   const today = moment();
   const day = today.date();
   await sfe.gather(today.format('YYYYMMDD'));
+  await ccmn.gather();
 
   if (day !== 1 && day !== 16) { process.exit(0); }
   logger.info({ day }, 'will send mail');
@@ -29,17 +32,23 @@ models()
   const alContent = await sfeExcel({
     start, end, productId: 'al_f'
   });
+  const ccmnContent = await ccmnExcel({
+    start, end, name: '1#铜'
+  });
   const filename = `${start.format('MMDD')}-${end.format('MMDD')}`;
   await mailSender.send({
-    subject: `上期所交易数据${filename}`,
-    text: `Hey~I am Billy~
+    subject: `交易数据${filename}`,
+    text: `Hey~I am your Billy~
 距离3个月还有${moment(new Date('2017/11/19')).diff(moment(), 'days')}天哦`,
     attachments: [{
-      filename: `铜-${filename}.xlsx`,
+      filename: `上期所铜-${filename}.xlsx`,
       content: cuContent
     }, {
-      filename: `铝-${filename}.xlsx`,
+      filename: `上期所铝-${filename}.xlsx`,
       content: alContent
+    }, {
+      filename: `长江有色金属网-1#铜-${filename}.xlsx`,
+      content: ccmnContent
     }]
   });
   process.exit(0);
