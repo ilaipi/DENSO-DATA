@@ -39,7 +39,7 @@ models()
   await mailSender.send({
     subject: `交易数据${filename}`,
     text: `Hey~I am your Billy~
-距离3个月还有${moment(new Date('2017/11/19')).diff(moment(), 'days')}天哦`,
+距离100天还有${moment(new Date('2017/08/19')).add(99, 'days').diff(moment(), 'days')}天哦`,
     attachments: [{
       filename: `上期所铜-${filename}.xlsx`,
       content: cuContent
