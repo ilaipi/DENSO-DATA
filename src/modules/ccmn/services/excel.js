@@ -1,9 +1,20 @@
 import sequelize from 'sequelize';
 import excel from 'node-excel-export';
 
+const Op = sequelize.Op;
+
 export default async ({ start, end, name }) => {
   const model = sequelize.models.CCMN;
-  const rows = await model.findAll({ where: { name }, order: [ [ 'date' ] ] }); // 日期排升序
+  const rows = await model.findAll({
+    where: {
+      name,
+      date: {
+        [ Op.gte ]: start,
+        [ Op.lt ]: end
+      }
+    },
+    order: [ [ 'date' ] ]
+  }); // 日期排升序
   const specification = {
     date: {
       displayName: '日期',
