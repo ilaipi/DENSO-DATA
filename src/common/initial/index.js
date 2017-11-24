@@ -7,7 +7,7 @@ import * as sfe from './../../modules/sfe/service.js';
 import * as ccmn from './../../modules/ccmn/service.js';
 
 export default async () => {
-  let date = moment().subtract(4, 'months');
+  let date = moment(new Date('2017-11-16'));
   do {
     await sfe.gather(date.format('YYYYMMDD'));
     date.add(1, 'days');
