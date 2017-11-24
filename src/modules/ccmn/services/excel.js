@@ -3,7 +3,7 @@ import excel from 'node-excel-export';
 
 export default async ({ start, end, name }) => {
   const model = sequelize.models.CCMN;
-  const rows = await model.findAll({ where: { name } });
+  const rows = await model.findAll({ where: { name }, order: [ [ 'date' ] ] }); // 日期排升序
   const specification = {
     date: {
       displayName: '日期',
