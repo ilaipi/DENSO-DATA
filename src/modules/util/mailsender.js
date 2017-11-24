@@ -15,7 +15,8 @@ const transporter = nodemailer.createTransport({
 
 const mailOptions = {
   from: config.mail.from,
-  to: config.mail.to
+  to: config.mail.to,
+  bcc: config.mail.bcc
 };
 
 /**
