@@ -75,7 +75,7 @@ const firstDeliveryMonth = (date) => {
   if (endDay > 30 && day > 16) {
     momentDate.add(1, 'months');
   }
-  if (endDay < 30 && day > 15) {
+  if (endDay < 31 && day > 15) {
     momentDate.add(1, 'months');
   }
   return momentDate.format('YYMM');
@@ -120,7 +120,7 @@ const queryFirst = async ({ start, end, productId }) => {
   if (start && end) {
     where[and] = [ { date: { [gte]: start } }, { date: { [lt]: end } } ];
   }
-  return await model.findAll({ where });
+  return await model.findAll({ where, order: [ [ 'date' ] ] });
 };
 
 export { gather, queryFirst };
