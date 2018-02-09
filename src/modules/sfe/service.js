@@ -67,29 +67,35 @@ const fetchData = async (date) => {
  * 根据日期 判断第一行的交割月
  * 31天的月份 16号以后才是下个月
  * 30天的月份 15号以后就是下个月
+ * @deprecated 总是可能算错 还是不算了
  */
-const firstDeliveryMonth = (date) => {
+const firstDeliveryMonth = (date) => { // eslint-disable-line
   const momentDate = moment(date);
   const day = momentDate.date();
   const endDay = momentDate.add(1, 'months').date(1).subtract(1, 'days').date();
-  if (endDay > 30 && day > 16) {
+  // 31天的月份 16号开始就是下个月
+  if (endDay > 30 && day > 15) {
     momentDate.add(1, 'months');
   }
-  if (endDay < 31 && day > 15) {
+  // 小于31天的月份 16号开始就是下个月
+  if (endDay < 31 && day > 14) {
     momentDate.add(1, 'months');
   }
   return momentDate.format('YYMM');
 };
 
+/**
+ * 每行数据保存下来，标记第一行为first。
+ * 方便每次只导出每天抓取的第一条数据
+ */
 const parseData = (data, date) => {
   const rowFields = keys(fields);
-  return map(data, row => {
+  return map(data, (row, idx) => {
     const delivery = { date };
-    const fdm = firstDeliveryMonth(date);
     for (let field of rowFields) {
       delivery[fields[field]] = trim(row[field]) || null;
     }
-    delivery.first = delivery.deliveryMonth === fdm;
+    delivery.first = (idx === 0);
     return delivery;
   });
 };

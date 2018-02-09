@@ -38,6 +38,7 @@ models()
     start, end, name: '1#铜'
   });
   const filename = `${start.format('MMDD')}-${end.format('MMDD')}`;
+  // 每个月19号，认识纪念日
   const next19 = (moment().date() > 19 ? moment().add(1, 'months') : moment()).date(19).startOf('day');
   const months = next19.diff(beginAt, 'months');
   await mailSender.send({
