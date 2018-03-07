@@ -95,7 +95,7 @@ const parseData = (data, date) => {
     for (let field of rowFields) {
       delivery[fields[field]] = trim(row[field]) || null;
     }
-    delivery.first = (idx === 0);
+    delivery.first = ((idx % 13) === 0);
     return delivery;
   });
 };
