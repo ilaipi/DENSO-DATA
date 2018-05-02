@@ -13,7 +13,8 @@ import ccmnExcel from './modules/ccmn/services/excel.js';
 import * as mailSender from './modules/util/mailsender.js';
 import logger from './modules/util/log.js';
 
-const beginAt = moment(new Date('2017/08/19')).startOf('day');
+// const beginAt = moment(new Date('2017/08/19')).startOf('day');
+const endAt = moment(new Date('2018/04/21')).startOf('day');
 
 models()
 .then(async () => {
@@ -38,14 +39,19 @@ models()
     start, end, name: '1#铜'
   });
   const filename = `${start.format('MMDD')}-${end.format('MMDD')}`;
-  // 每个月19号，认识纪念日
-  const next19 = (moment().date() > 19 ? moment().add(1, 'months') : moment()).date(19).startOf('day');
-  const months = next19.diff(beginAt, 'months');
+  // // 每个月19号，认识纪念日
+  // const next19 = (moment().date() > 19 ? moment().add(1, 'months') : moment()).date(19).startOf('day');
+  // const months = next19.diff(beginAt, 'months');
+  // 4月21号，分手了
+  const days = moment().diff(endAt, 'days');
   await mailSender.send({
     subject: `交易数据${filename}`,
     // 距离1000天还有${moment(new Date('2017/08/19')).add(999, 'days').diff(moment(), 'days')}天哦`,
-    text: `Hey~I am your Billy~
-    距离${months}个月还有${next19.diff(moment(), 'days')}天哦`,
+    // text: `Hey~I am your Billy~
+    // 距离${months}个月还有${next19.diff(moment(), 'days')}天哦`,
+    text: `Hey~分开${days}天了。你还好吗？
+
+            Billy Yang`,
     attachments: [{
       filename: `上期所铜-${filename}.xlsx`,
       content: cuContent
