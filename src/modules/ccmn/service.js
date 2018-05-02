@@ -3,7 +3,7 @@ import moment from 'moment';
 import axios from 'axios';
 import iconv from 'iconv';
 import cheerio from 'cheerio';
-import { map } from 'lodash';
+import { map, isEmpty } from 'lodash';
 
 import logger from './../util/log.js';
 
@@ -32,6 +32,7 @@ const fetchData = async () => {
 const fields = ['name', 'priceRange', 'avgPrice', 'zd', 'unit', 'date'];
 
 const parseData = (data) => {
+  if (isEmpty(data)) return [];
   const year = moment().get('year');
   const rows = data.map((idx, element) => {
     const $ = cheerio.load(element);
@@ -54,6 +55,7 @@ const gather = async () => {
   const data = await fetchData();
   logger.info('ccmn fetched');
   const products = parseData(data);
+  if (isEmpty(products)) return;
   const date = products[0].date;
   const Model = sequelize.models.CCMN;
   await Model.destroy({ where: { date } });
